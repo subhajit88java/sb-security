@@ -28,10 +28,10 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 // used to enable @Secured annotation
 //@EnableGlobalMethodSecurity(
-//        securedEnabled = true)
+        //securedEnabled = true)
 // used to enable @PreAuthorize annotaion
 //@EnableGlobalMethodSecurity(
-//        prePostEnabled = true)
+       // prePostEnabled = true)
 public class SecurityConfig {
 
     @Autowired
@@ -43,9 +43,10 @@ public class SecurityConfig {
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-
         authProvider.setUserDetailsService(userDetailsService);
         authProvider.setPasswordEncoder(passwordEncoder());
+
+        System.out.println("[SPRING SECURITY] DaoAuthenticationProvider initialized!!");
 
         return authProvider;
     }
@@ -54,7 +55,8 @@ public class SecurityConfig {
     // Password encoding bean, raw password will be encoded and will be kept in internal memory or database
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+        System.out.println("[SPRING SECURITY] PasswordEncoder initialized!!");
+        return new BCryptPasswordEncoder(BCryptPasswordEncoder.BCryptVersion.$2B, 12);
     }
 
 
@@ -62,7 +64,7 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .csrf().disable()
-                .authorizeRequests() // asking spring security framework to implement authentication and authorization criterias for th euincoming request
+                .authorizeRequests() // asking spring security framework to implement authentication and authorization criteria for the incoming request
                 .antMatchers("/get-public-user") // compares the given endpoint with the incoming one
                 .permitAll() // in antMatcher returns true then authentication and authorization checks will not be applied
                 .antMatchers("/post-public-user")
@@ -71,16 +73,16 @@ public class SecurityConfig {
                 .permitAll()
                 .antMatchers("/delete-public-user")
                 .permitAll()
-                .antMatchers(HttpMethod.OPTIONS) // exemption will be only on OPTIONS and GET method if permit all is applied, for POST/PUT/DELETE it will not work even after permitting it, need to check for PUT and DELETE
-                .permitAll()
+                .antMatchers(HttpMethod.OPTIONS)
+                .permitAll() // matchers on http methods hold higher precedence over endpoint, i.e endpoint restrictions will be nullified once method permits all
                 .antMatchers("/get-private-user")
-                .hasRole("private-user") // Authentication will be applied 1st and then authorization. If the incoming user has the given role then only it can access the given resource
+                .hasRole("private") // Authentication will be applied 1st and then authorization. If the incoming user has the given role then only it can access the given resource
                 .antMatchers("/post-private-user")
-                .hasRole("private-user")
+                .hasRole("private")
                 .antMatchers("/put-private-user")
-                .hasRole("private-user")
+                .hasRole("private")
                 .antMatchers("/delete-private-user")
-                .hasRole("private-user")
+                .hasRole("private")
                 .antMatchers("/admin-user")
                 .hasRole("admin")
                 .anyRequest() // All other requests except those which are mentioned with ant-matchers will be authenticated only, no authorization
@@ -91,6 +93,9 @@ public class SecurityConfig {
                 .and()
                 //.formLogin();
                 .httpBasic(); // Asking spring security framework to implement Basic Auth. The incoming request will be intercepted by BasicAuthFilter
+
+        System.out.println("[SPRING SECURITY] SecurityFilterChain initialized!!");
+
         return http.build();
     }
 

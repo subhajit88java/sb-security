@@ -25,13 +25,21 @@ public class UserDetailsImpl implements UserDetails {
 
   private Collection<? extends GrantedAuthority> authorities;
 
-  public UserDetailsImpl(Long id, String username, String email, String password,
+  private UserDetailsImpl(Long id, String username, String email, String password,
                          Collection<? extends GrantedAuthority> authorities) {
     this.id = id;
     this.username = username;
     this.email = email;
     this.password = password;
     this.authorities = authorities;
+
+    System.out.println("[SPRING SECURITY] UserDetailsImpl populated with following data --> ");
+    System.out.println("[SPRING SECURITY] id --> " + id);
+    System.out.println("[SPRING SECURITY] username --> " + username);
+    System.out.println("[SPRING SECURITY] email --> " + email);
+    System.out.println("[SPRING SECURITY] password --> " + password);
+    System.out.println("[SPRING SECURITY] authorities --> " + authorities);
+
   }
 
   public static UserDetailsImpl build(User user) {

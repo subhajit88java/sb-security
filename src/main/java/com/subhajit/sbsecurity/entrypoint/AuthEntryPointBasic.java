@@ -18,13 +18,19 @@ import java.util.Map;
 @Component
 public class AuthEntryPointBasic implements AuthenticationEntryPoint {
 
+  {
+    System.out.println("[SPRING SECURITY] AuthEntryPointBasic initialized!!");
+  }
+
   private static final Logger logger = LoggerFactory.getLogger(AuthEntryPointBasic.class);
 
+  // This method gets executed during authentication exception, NOT authorization exception
   @Override
   public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException)
       throws IOException, ServletException {
 
-      System.out.println("AuthenticationException : " + authException.getMessage());
+    System.out.println("[SPRING SECURITY] Authentication exception encountered!!");
+    System.out.println(authException.getMessage());
 
     response.setContentType(MediaType.APPLICATION_JSON_VALUE);
     response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -34,7 +40,7 @@ public class AuthEntryPointBasic implements AuthenticationEntryPoint {
     body.put("error", "Unauthorized");
     body.put("message", authException.getMessage());
     body.put("path", request.getServletPath());
-    body.put("type", "Subhajit Customized");
+    body.put("type", "This is customized exception handler");
 
     final ObjectMapper mapper = new ObjectMapper();
     mapper.writeValue(response.getOutputStream(), body);
